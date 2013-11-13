@@ -1,0 +1,23 @@
+{
+	"name": "arguer",
+	"version": "0.0.1",
+	"author": "Bret Copeland <bret@atlantisflight.org>",
+	"description": "Normalizes arguments for JavaScript functions with optional arguments and provides optional typing.",
+	"main": "./arguer.js",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/bretcope/arguer.git"
+	},
+	"dependencies": {},
+	"devDependencies": {},
+	"keywords": [
+		"argument",
+		"parameter",
+		"overload",
+		"function",
+		"normalize",
+		"optional"
+	],
+	"analyze": false,
+	"license": "MIT"
+}
