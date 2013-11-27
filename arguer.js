@@ -13,7 +13,7 @@ var arguer = module.exports = function (args, format)
 		format._optional = 0;
 		for (var x in format)
 		{
-			if (format[x] && (format[x].optional || format[x].mutex || format[x].requires || format[x].requiredBy))
+			if (format[x] && (format[x].optional || format[x].mutex || format[x].requires || format[x].requiredBy || ('default' in format[x])))
 			{
 				format[x].optional = true;
 				format._optional++;

@@ -88,11 +88,11 @@ Opposite of instance.
 
 #### default : _string_
 
-Specifies a default value for an argument.
+Specifies a default value for an argument. If a default value is provided, `optional:true` is implied, and can be omitted.
 
 ### Back-Reference Properties
 
-Each of the following properties accept a string which represents the name of a previous argument. ___Only previous___ arguments can referenced. In other words, arg with index 4 can reference any arg 0 through 3, but cannot reference arg 5. If any one or more of the following properties are used, optional:true is implied, and can be omitted.
+Each of the following properties accept a string which represents the name of a previous argument. ___Only previous___ arguments can referenced. In other words, arg with index 4 can reference any arg 0 through 3, but cannot reference arg 5. If any one or more of the following properties are used, `optional:true` is implied, and can be omitted.
 
 #### requires : _string_
 
