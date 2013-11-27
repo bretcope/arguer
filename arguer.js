@@ -4,11 +4,11 @@
  * @param format {Array}
  * @returns {{}|Error} A hash table with the names of each format elements as keys. Optional format elements which were not fulfilled by an argument are undefined. If the arguments failed to parse correctly, the returned object will be an Error object.
  */
-module.exports = function (args, format)
+var arguer = module.exports = function (args, format)
 {
 	var deficit = format.length - args.length;
 
-	if (!format._optional)
+	if (format._optional === undefined)
 	{
 		format._optional = 0;
 		for (var x in format)
@@ -51,7 +51,7 @@ module.exports = function (args, format)
 			{
 				if (item.optional && optionalSkipped < deficit && (!item.requiredBy || result[item.requiredBy] === undefined))
 				{
-					result[item.name] = undefined;
+					result[item.name] = item.default;
 					optionalSkipped++;
 				}
 				else
@@ -70,7 +70,7 @@ module.exports = function (args, format)
 					else
 					{
 						optionalSkipped++;
-						result[item.name] = undefined;
+						result[item.name] = item.default;
 						continue;
 					}
 				}
@@ -82,4 +82,13 @@ module.exports = function (args, format)
 	}
 
 	return result;
+};
+
+arguer.thrower = function (args, format)
+{
+	var a = arguer(args, format);
+	if (a instanceof Error)
+		throw a;
+	
+	return a;
 };

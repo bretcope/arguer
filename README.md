@@ -86,6 +86,10 @@ Similar to type, except instanceof is used for comparison instead of typeof.
 
 Opposite of instance.
 
+#### default : _string_
+
+Specifies a default value for an argument.
+
 ### Back-Reference Properties
 
 Each of the following properties accept a string which represents the name of a previous argument. ___Only previous___ arguments can referenced. In other words, arg with index 4 can reference any arg 0 through 3, but cannot reference arg 5. If any one or more of the following properties are used, optional:true is implied, and can be omitted.
@@ -116,7 +120,7 @@ function test (a, b, c) {
 test('hello', 'world');
 ```
 
-we might intuitively think `'world'` would be a better fit for argument `c` since it's a string; however, it be assigned to argument `b` because arguments are evaluated in-order and `b` can match anything. Therefore, this will output:
+we might intuitively think `'world'` would be a better fit for argument `c` since it's a string; however, it will be assigned to argument `b` because arguments are evaluated in-order and `b` can match anything. Therefore, this will output:
 
 ```javascript
 { a: 'hello', b: 'world', c: undefined }
@@ -144,6 +148,18 @@ Outputs:
 
 ```
 Not enough arguments provided.
+```
+
+If you would like arguer to automatically _throw_ in the event of an error, use `arguer.thrower` instead. The following example will automatically throw an error.
+
+```javascript
+var arguer = require('arguer').thrower;
+
+function test (a, b, c) {
+   var args = arguer(arguments, ['a', 'b', 'c']);
+}
+
+test('hello', 'world');
 ```
 
 ## Additional Examples
