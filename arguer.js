@@ -11,11 +11,13 @@ var arguer = module.exports = function (args, format)
 	if (format._optional === undefined)
 	{
 		format._optional = 0;
+		var f;
 		for (var x in format)
 		{
-			if (format[x] && (format[x].optional || format[x].mutex || format[x].requires || format[x].requiredBy || ('default' in format[x])))
+			var f = format[x];
+			if (f && typeof f === 'object' && (f.optional || f.mutex || f.requires || f.requiredBy || ('default' in f)))
 			{
-				format[x].optional = true;
+				f.optional = true;
 				format._optional++;
 			}
 		}

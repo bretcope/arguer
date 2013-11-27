@@ -1,6 +1,6 @@
 {
 	"name": "arguer",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"author": "Bret Copeland <bret@atlantisflight.org>",
 	"description": "Normalizes arguments for JavaScript functions with optional arguments and provides optional typing.",
 	"main": "./arguer.js",
