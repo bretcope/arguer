@@ -14,15 +14,20 @@ var arguer = module.exports = function (args, format)
 		var f;
 		for (var x in format)
 		{
-			var f = format[x];
+			f = format[x];
 			if (f && typeof f === 'object' && (f.optional || f.mutex || f.requires || f.requiredBy || ('default' in f)))
 			{
 				f.optional = true;
 				format._optional++;
-
-				f.mutex = f.mutex ? (f.mutex instanceof Array ? f.mutex : [f.mutex]) : [];
-				f.requires = f.requires ? (f.requires instanceof Array ? f.requires : [f.requires]) : [];
-				f.requiredBy = f.requiredBy ? (f.requiredBy instanceof Array ? f.requiredBy : [f.requiredBy]) : [];
+				
+				if (f.mutex && !(f.mutex instanceof Array))
+					f.mutex = [ f.mutex ];
+				
+				if (f.requires && !(f.requires instanceof Array))
+					f.requires = [ f.requires ];
+				
+				if (f.requiredBy && !(f.requiredBy instanceof Array))
+					f.requiredBy = [ f.requiredBy ];
 			}
 		}
 	}
@@ -37,7 +42,11 @@ var arguer = module.exports = function (args, format)
 	var optionalIncluded = 0;
 	var optionalSkipped = 0;
 	var item;
-	var argDex = 0, mutex, requires, requiredBy;
+	var argDex = 0;
+	
+	function isDefined (prop) { return result[prop] !== undefined; }
+	function isUndefined (prop) { return result[prop] === undefined; }
+	
 	for (var i = 0; i < format.length; i++)
 	{
 		item = format[i];
@@ -50,19 +59,15 @@ var arguer = module.exports = function (args, format)
 		else
 		{
 			// failure conditions
-			if (
-				(item.type && typeof args[argDex] !== item.type) ||
+			if ((item.type && typeof args[argDex] !== item.type) ||
 				(item.nType && typeof args[argDex] === item.nType) ||
 				(item.instance && !(args[argDex] instanceof item.instance)) ||
 				(item.nInstance && args[argDex] instanceof item.nInstance) ||
-				(item.mutex && item.mutex.some(function (prop) { return result[prop] !== undefined; })) ||
-				(item.requires && item.requires.some(function (prop) { return result[prop] === undefined; }))
-			)
+				(item.mutex && item.mutex.some(isDefined)) ||
+				(item.requires && item.requires.some(isUndefined)))
 			{
-				if (
-					item.optional && optionalSkipped < deficit && 
-					(item.requiredBy && item.requiredBy.every(function (prop) { return result[prop] === undefined; }))
-				)
+				if (item.optional && optionalSkipped < deficit &&
+					(!item.requiredBy || item.requiredBy.every(isUndefined)))
 				{
 					result[item.name] = item.default;
 					optionalSkipped++;
