@@ -19,6 +19,10 @@ var arguer = module.exports = function (args, format)
 			{
 				f.optional = true;
 				format._optional++;
+
+				f.mutex = f.mutex ? (f.mutex instanceof Array ? f.mutex : [f.mutex]) : [];
+				f.requires = f.requires ? (f.requires instanceof Array ? f.requires : [f.requires]) : [];
+				f.requiredBy = f.requiredBy ? (f.requiredBy instanceof Array ? f.requiredBy : [f.requiredBy]) : [];
 			}
 		}
 	}
@@ -33,10 +37,11 @@ var arguer = module.exports = function (args, format)
 	var optionalIncluded = 0;
 	var optionalSkipped = 0;
 	var item;
-	var argDex = 0;
+	var argDex = 0, mutex, requires, requiredBy;
 	for (var i = 0; i < format.length; i++)
 	{
 		item = format[i];
+
 		if (typeof item === 'string')
 		{
 			result[item] = args[argDex];
@@ -44,14 +49,20 @@ var arguer = module.exports = function (args, format)
 		}
 		else
 		{
-			if ((item.type && typeof args[argDex] !== item.type) ||
+			// failure conditions
+			if (
+				(item.type && typeof args[argDex] !== item.type) ||
 				(item.nType && typeof args[argDex] === item.nType) ||
 				(item.instance && !(args[argDex] instanceof item.instance)) ||
 				(item.nInstance && args[argDex] instanceof item.nInstance) ||
-				(item.mutex && result[item.mutex] !== undefined) ||
-				(item.requires && result[item.requires] === undefined))
+				(item.mutex && item.mutex.some(function (prop) { return result[prop] !== undefined; })) ||
+				(item.requires && item.requires.some(function (prop) { return result[prop] === undefined; }))
+			)
 			{
-				if (item.optional && optionalSkipped < deficit && (!item.requiredBy || result[item.requiredBy] === undefined))
+				if (
+					item.optional && optionalSkipped < deficit && 
+					(item.requiredBy && item.requiredBy.every(function (prop) { return result[prop] === undefined; }))
+				)
 				{
 					result[item.name] = item.default;
 					optionalSkipped++;
@@ -91,6 +102,8 @@ arguer.thrower = function (args, format)
 	var a = arguer(args, format);
 	if (a instanceof Error)
 		throw a;
-	
+
 	return a;
 };
+
+// vim: noet sw=4 ts=4
