@@ -17,5 +17,8 @@
     "optional"
   ],
   "analyze": false,
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "mocha": "^1.20.1"
+  }
 }
