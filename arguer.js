@@ -19,6 +19,10 @@ var arguer = module.exports = function (args, format)
 			{
 				f.optional = true;
 				format._optional++;
+
+				f.mutex = f.mutex ? (f.mutex instanceof Array ? f.mutex : [f.mutex]) : [];
+				f.requires = f.requires ? (f.requires instanceof Array ? f.requires : [f.requires]) : [];
+				f.requiredBy = f.requiredBy ? (f.requiredBy instanceof Array ? f.requiredBy : [f.requiredBy]) : [];
 			}
 		}
 	}
@@ -45,28 +49,19 @@ var arguer = module.exports = function (args, format)
 		}
 		else
 		{
-			mutex = item.mutex || [];
-			mutex = (mutex instanceof Array ? mutex : [mutex]);
-
-			requires = item.requires || [];
-			requires = (requires instanceof Array ? requires : [requires]);
-
-			requiredBy = item.requiredBy || [];
-			requiredBy = (requiredBy instanceof Array ? requiredBy : [requiredBy]);
-
 			// failure conditions
 			if (
 				(item.type && typeof args[argDex] !== item.type) ||
 				(item.nType && typeof args[argDex] === item.nType) ||
 				(item.instance && !(args[argDex] instanceof item.instance)) ||
 				(item.nInstance && args[argDex] instanceof item.nInstance) ||
-				(mutex.some(function (prop) { return result[prop] !== undefined; })) ||
-				(requires.some(function (prop) { return result[prop] === undefined; }))
+				(item.mutex && item.mutex.some(function (prop) { return result[prop] !== undefined; })) ||
+				(item.requires && item.requires.some(function (prop) { return result[prop] === undefined; }))
 			)
 			{
 				if (
 					item.optional && optionalSkipped < deficit && 
-					(requiredBy.every(function (prop) { return result[prop] === undefined; }))
+					(item.requiredBy && item.requiredBy.every(function (prop) { return result[prop] === undefined; }))
 				)
 				{
 					result[item.name] = item.default;
