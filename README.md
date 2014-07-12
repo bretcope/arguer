@@ -94,17 +94,17 @@ Specifies a default value for an argument. If a default value is provided, `opti
 
 Each of the following properties accept a string which represents the name of a previous argument. ___Only previous___ arguments can referenced. In other words, arg with index 4 can reference any arg 0 through 3, but cannot reference arg 5. If any one or more of the following properties are used, `optional:true` is implied, and can be omitted.
 
-#### requires : _string_
+#### requires : _string|string[]_
 
-The name of a preceding argument which must have been fulfilled in order for the current argument to be considered.
+The names of one or more preceding arguments, all of which must have been fulfilled in order for the current argument to be considered.
 
-#### requiredBy : _string_
+#### requiredBy : _string|string[]_
 
-The name of a preceding argument which, if fulfiled, causes the current argument to be required instead of optional.
+The names of one or more preceding arguments which, if all of them are fulfilled, causes the current argument to be required instead of optional.
 
-#### mutex : _string_
+#### mutex : _string|string[]_
 
-Essentially the opposite of requires&requiredBy. If the named argument was fulfilled, then the current argument will not be considered.
+Essentially the opposite of requires&requiredBy. If any of the named arguments were fulfilled, then the current argument will not be considered.
 
 ## Matching Algorithm
 
