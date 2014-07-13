@@ -14,14 +14,14 @@ npm install arguer
 
 ## Simple Example
 
-A function's _arguments_ and a _format array_ are passed to the `arguer` function which returns a normalized object.   
+A function's _arguments_ and a _format array_ are passed to the `arguer` function which returns a normalized object.
 
 ```javascript
 var arguer = require('./arguer.js');
 
 var _testFormat = ['a', {name: 'b', optional: true}, 'c'];
 function test (a, b, c) {
-  var args = arguer(arguments, _testFormat);
+  var args = arguer.apply(_testFormat, arguments);
   console.log(args);
 }
 
@@ -49,6 +49,8 @@ function test (a, b, c) {
 ```
 
 With only one or two occasional optional arguments, it is not difficult to handle this with your own code such as above. Much of Arguer's usefulness comes from its ability to handle more complicated scenarios.
+
+> For performance reasons, `arguer.apply(format, arguments)` is used because it is the only way to pass the `arguments` object to another function which is supported by the V8 optimizing compiler.
 
 ## Format Array
 
@@ -113,7 +115,7 @@ It is important to understand that the matching algorithm evaluates arguments in
 ```javascript
 var _testFormat = ['a', {name: 'b', optional: true}, {name: 'c', optional: true, type: 'string'}];
 function test (a, b, c) {
-  var args = arguer(arguments, _testFormat);
+  var args = arguer.apply(_testFormat, arguments);
   console.log(args);
 }
 
@@ -134,7 +136,7 @@ If the arguments provided cannot be matched according to the rules of the format
 
 ```javascript
 function test (a, b, c) {
-   var args = arguer(arguments, ['a', 'b', 'c']);
+   var args = arguer.apply(['a', 'b', 'c'], arguments);
    if (args instanceof Error) {
      console.log(args.message);
      return;
@@ -156,12 +158,8 @@ If you would like arguer to automatically _throw_ in the event of an error, use 
 var arguer = require('arguer').thrower;
 
 function test (a, b, c) {
-   var args = arguer(arguments, ['a', 'b', 'c']);
+   var args = arguer.apply(['a', 'b', 'c'], arguments);
 }
 
 test('hello', 'world');
 ```
-
-## Additional Examples
-
-Arguer was originally built as part of [neo4j-js](https://github.com/bretcope/neo4j-js), and, until more examples are added to this readme, it is probably the best source for examples.

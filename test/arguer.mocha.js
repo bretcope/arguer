@@ -8,7 +8,7 @@ function tester(format)
 {
 	return function ()
 	{
-		var args = arguer(arguments, format);
+		var args = arguer.apply(format, arguments);
 		if (args instanceof Error)
 		{
 			args.message += ': ' + util.inspect([].slice.call(arguments, 0));

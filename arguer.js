@@ -1,18 +1,26 @@
+"use strict";
+
+module.exports = arguer;
+
 /**
  * 
- * @param args {arguments}
- * @param format {Array}
+ * @this {Array} A format array.
  * @returns {{}|Error} A hash table with the names of each format elements as keys. Optional format elements which were not fulfilled by an argument are undefined. If the arguments failed to parse correctly, the returned object will be an Error object.
  */
-var arguer = module.exports = function (args, format)
+function arguer ()
 {
-	var deficit = format.length - args.length;
+	// backwards compatibility shim
+	if (!this)
+		return arguer.apply(arguments[1], arguments[0]);
+	
+	var format = this;
+	var deficit = format.length - arguments.length;
 
 	if (format._optional === undefined)
 	{
 		format._optional = 0;
 		var f;
-		for (var x in format)
+		for (var x = 0; x < format.length; x++)
 		{
 			f = format[x];
 			if (f && typeof f === 'object' && (f.optional || f.mutex || f.requires || f.requiredBy || ('default' in f)))
@@ -53,16 +61,16 @@ var arguer = module.exports = function (args, format)
 
 		if (typeof item === 'string')
 		{
-			result[item] = args[argDex];
+			result[item] = arguments[argDex];
 			argDex++;
 		}
 		else
 		{
 			// failure conditions
-			if ((item.type && typeof args[argDex] !== item.type) ||
-				(item.nType && typeof args[argDex] === item.nType) ||
-				(item.instance && !(args[argDex] instanceof item.instance)) ||
-				(item.nInstance && args[argDex] instanceof item.nInstance) ||
+			if ((item.type && typeof arguments[argDex] !== item.type) ||
+				(item.nType && typeof arguments[argDex] === item.nType) ||
+				(item.instance && !(arguments[argDex] instanceof item.instance)) ||
+				(item.nInstance && arguments[argDex] instanceof item.nInstance) ||
 				(item.mutex && item.mutex.some(isDefined)) ||
 				(item.requires && item.requires.some(isUndefined)))
 			{
@@ -93,7 +101,7 @@ var arguer = module.exports = function (args, format)
 					}
 				}
 
-				result[item.name] = args[argDex];
+				result[item.name] = arguments[argDex];
 				argDex++;
 			}
 		}
@@ -102,9 +110,14 @@ var arguer = module.exports = function (args, format)
 	return result;
 };
 
-arguer.thrower = function (args, format)
+arguer.thrower = function ()
 {
-	var a = arguer(args, format);
+	var a;
+	if (this)
+		a = arguer.apply(this, arguments);
+	else
+		a = arguer.apply(arguments[1], arguments[0]); // backwards compatibility shim
+	
 	if (a instanceof Error)
 		throw a;
 
